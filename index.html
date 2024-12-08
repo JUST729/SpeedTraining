@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Training Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        #game-container {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            border-radius: 10px;
+        }
+
+        #game-area {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+            background-color: #e0e0e0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .target {
+            position: absolute;
+            background-color: #ff5722;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        .target:active {
+            transform: scale(0.9);
+        }
+
+        #start-button, .level-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            margin: 5px;
+        }
+
+        #start-button:hover, .level-button:hover {
+            background-color: #45a049;
+        }
+
+        #time-display, #misses-display {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Speed Training Game</h1>
+        <p id="score-display">Score: 0</p>
+        <p id="time-display">Time left: 30s</p>
+        <p id="misses-display">Misses: 0</p>
+        <div id="game-area"></div>
+        <div>
+            <button class="level-button" onclick="setLevel(1)">Level 1</button>
+            <button class="level-button" onclick="setLevel(2)">Level 2</button>
+            <button class="level-button" onclick="setLevel(3)">Level 3</button>
+            <button class="level-button" onclick="setLevel(4)">Level 4</button>
+        </div>
+        <button id="start-button">Start Game</button>
+    </div>
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const startButton = document.getElementById('start-button');
+        const scoreDisplay = document.getElementById('score-display');
+        const timeDisplay = document.getElementById('time-display');
+        const missesDisplay = document.getElementById('misses-display');
+
+        let score = 0;
+        let misses = 0;
+        let gameInterval;
+        let timerInterval;
+        let level = 1;
+        let timeLeft = 30;
+
+        const levelSettings = {
+            1: { size: 50, speed: 1500 },
+            2: { size: 40, speed: 1200 },
+            3: { size: 30, speed: 900 },
+            4: { size: 20, speed: 700 },
+        };
+
+        function setLevel(selectedLevel) {
+            level = selectedLevel;
+            alert(`Level ${level} selected!`);
+        }
+
+        function startGame() {
+            score = 0;
+            misses = 0;
+            timeLeft = 30;
+            scoreDisplay.textContent = `Score: ${score}`;
+            missesDisplay.textContent = `Misses: ${misses}`;
+            timeDisplay.textContent = `Time left: ${timeLeft}s`;
+            startButton.disabled = true;
+
+            gameInterval = setInterval(() => {
+                createTarget();
+            }, levelSettings[level].speed);
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = `Time left: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+
+            setTimeout(endGame, 30000); // 30 seconds game duration
+        }
+
+        function createTarget() {
+            const target = document.createElement('div');
+            target.classList.add('target');
+            
+            // Set size based on level
+            const size = levelSettings[level].size;
+            target.style.width = `${size}px`;
+            target.style.height = `${size}px`;
+
+            // Random position within the game area
+            const x = Math.random() * (gameArea.clientWidth - size);
+            const y = Math.random() * (gameArea.clientHeight - size);
+
+            target.style.left = `${x}px`;
+            target.style.top = `${y}px`;
+            target.style.position = 'absolute';
+            
+            target.addEventListener('click', () => {
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                target.remove();
+            });
+
+            gameArea.appendChild(target);
+
+            // Remove target after a set time if not clicked
+            setTimeout(() => {
+                if (target.parentElement) target.remove();
+            }, levelSettings[level].speed - 300);
+        }
+
+        // Track clicks outside the game area to count as misses
+        gameArea.addEventListener('click', (event) => {
+            // Check if the click was outside the target
+            if (!event.target.classList.contains('target')) {
+                misses++;
+                missesDisplay.textContent = `Misses: ${misses}`;
+            }
+        });
+
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+            alert(`Game over! Your final score is ${score}. Misses: ${misses}`);
+            startButton.disabled = false;
+        }
+
+        startButton.addEventListener('click', startGame);
+    </script>
+</body>
+</html>
