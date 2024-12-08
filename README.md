@@ -14,4 +14,4 @@ Everyone have good day
 BYEEEE :3
 
 UPDATE LOGS:
-UPDATE LOG: 08.12.2024 - 13:15 Remove button Final Message in Speed Ends menu ( If i remove it game doesnt work =[ )
+UPDATE LOG: 08.12.2024 - 13:23 Add "Speed Ends" menu it show all endings what you can get also i remove "Level 1-4" now u can make speed how your soul want and thats all what i do
