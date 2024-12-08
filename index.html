@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+=<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -44,7 +44,7 @@
             transform: scale(0.9);
         }
 
-        #start-button, .level-button {
+        #start-button, .level-button, #auto-button, #end-button, #speed-ends-button {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
@@ -55,13 +55,45 @@
             margin: 5px;
         }
 
-        #start-button:hover, .level-button:hover {
+        #start-button:hover, .level-button:hover, #auto-button:hover, #end-button:hover, #speed-ends-button:hover {
             background-color: #45a049;
         }
 
         #time-display, #misses-display {
             font-size: 18px;
             margin-top: 10px;
+        }
+
+        #message {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #ff5722;
+        }
+
+        #custom-speed {
+            padding: 5px;
+            font-size: 16px;
+            width: 100px;
+            margin-bottom: 10px;
+        }
+
+        #speed-ends-menu {
+            display: none;
+            margin-top: 20px;
+            background-color: #f7f7f7;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #speed-ends-menu div {
+            margin-bottom: 10px;
+        }
+
+        .message-status {
+            font-size: 16px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -73,51 +105,72 @@
         <p id="misses-display">Misses: 0</p>
         <div id="game-area"></div>
         <div>
-            <button class="level-button" onclick="setLevel(1)">Level 1</button>
-            <button class="level-button" onclick="setLevel(2)">Level 2</button>
-            <button class="level-button" onclick="setLevel(3)">Level 3</button>
-            <button class="level-button" onclick="setLevel(4)">Level 4</button>
+            <label for="custom-speed">Target Speed (ms):</label>
+            <input type="number" id="custom-speed" value="1500" min="500" />
         </div>
         <button id="start-button">Start Game</button>
+        <button id="auto-button">Auto Game</button>
+        <button id="end-button">End Game</button>
+        <button id="speed-ends-button">Speed Ends</button> <!-- New Speed Ends Button -->
+        <div id="speed-ends-menu"> <!-- Speed Ends Menu -->
+            <h3>Unlocked Messages</h3>
+            <div id="message1" class="message-status">1. Ты очень медленый попробуй быстрее: Locked</div>
+            <div id="message2" class="message-status">2. Уже лучше чем ничего: Locked</div>
+            <div id="message3" class="message-status">3. А ты не такой медленый: Locked</div>
+            <div id="message4" class="message-status">4. Быстро: Locked</div>
+            <div id="message5" class="message-status">5. Ну ладно, свободен: Locked</div>
+            <div id="message6" class="message-status">6. Я гуль...: Locked</div>
+        </div>
+        <p id="message"></p>
     </div>
     <script>
         const gameArea = document.getElementById('game-area');
         const startButton = document.getElementById('start-button');
+        const autoButton = document.getElementById('auto-button');
+        const endButton = document.getElementById('end-button');
+        const speedEndsButton = document.getElementById('speed-ends-button'); // Speed Ends button element
         const scoreDisplay = document.getElementById('score-display');
         const timeDisplay = document.getElementById('time-display');
         const missesDisplay = document.getElementById('misses-display');
+        const messageDisplay = document.getElementById('message');
+        const customSpeedInput = document.getElementById('custom-speed');
+        const speedEndsMenu = document.getElementById('speed-ends-menu');
 
         let score = 0;
         let misses = 0;
         let gameInterval;
         let timerInterval;
-        let level = 1;
         let timeLeft = 30;
+        let autoGameInterval;
+        let targetSpeed = parseInt(customSpeedInput.value);
+        let unlockedMessages = [false, false, false, false, false, false]; // Tracking message unlocks
+        let finalMessage = ''; // Variable to store the final message for Speed Ends menu
 
-        const levelSettings = {
-            1: { size: 50, speed: 1500 },
-            2: { size: 40, speed: 1200 },
-            3: { size: 30, speed: 900 },
-            4: { size: 20, speed: 700 },
-        };
-
-        function setLevel(selectedLevel) {
-            level = selectedLevel;
-            alert(`Level ${level} selected!`);
+        function setTargetSpeed() {
+            targetSpeed = parseInt(customSpeedInput.value);
+            if (targetSpeed < 500) {
+                alert("Target speed should be at least 500 ms");
+                customSpeedInput.value = 500;
+                targetSpeed = 500;
+            }
         }
 
         function startGame() {
+            setTargetSpeed();
             score = 0;
             misses = 0;
             timeLeft = 30;
             scoreDisplay.textContent = `Score: ${score}`;
             missesDisplay.textContent = `Misses: ${misses}`;
             timeDisplay.textContent = `Time left: ${timeLeft}s`;
+            messageDisplay.textContent = ''; // Clear any previous message
             startButton.disabled = true;
+            autoButton.disabled = true;
+            endButton.disabled = false;
 
             gameInterval = setInterval(() => {
                 createTarget();
-            }, levelSettings[level].speed);
+            }, targetSpeed);
 
             timerInterval = setInterval(() => {
                 timeLeft--;
@@ -134,19 +187,16 @@
             const target = document.createElement('div');
             target.classList.add('target');
             
-            // Set size based on level
-            const size = levelSettings[level].size;
+            const size = 50; // You can customize this as well
             target.style.width = `${size}px`;
             target.style.height = `${size}px`;
 
-            // Random position within the game area
             const x = Math.random() * (gameArea.clientWidth - size);
             const y = Math.random() * (gameArea.clientHeight - size);
 
             target.style.left = `${x}px`;
             target.style.top = `${y}px`;
-            target.style.position = 'absolute';
-            
+
             target.addEventListener('click', () => {
                 score++;
                 scoreDisplay.textContent = `Score: ${score}`;
@@ -155,15 +205,12 @@
 
             gameArea.appendChild(target);
 
-            // Remove target after a set time if not clicked
             setTimeout(() => {
                 if (target.parentElement) target.remove();
-            }, levelSettings[level].speed - 300);
+            }, targetSpeed - 300);
         }
 
-        // Track clicks outside the game area to count as misses
         gameArea.addEventListener('click', (event) => {
-            // Check if the click was outside the target
             if (!event.target.classList.contains('target')) {
                 misses++;
                 missesDisplay.textContent = `Misses: ${misses}`;
@@ -173,11 +220,82 @@
         function endGame() {
             clearInterval(gameInterval);
             clearInterval(timerInterval);
+            clearInterval(autoGameInterval);
+            
+            let message = '';
+            if (score === 0) {
+                message = 'Ты очень медленый попробуй быстрее';
+                unlockedMessages[0] = true;
+            } else if (score >= 1 && score <= 5) {
+                message = 'Уже лучше чем ничего';
+                unlockedMessages[1] = true;
+            } else if (score >= 6 && score <= 10) {
+                message = 'А ты не такой медленый';
+                unlockedMessages[2] = true;
+            } else if (score >= 11 && score <= 15) {
+                message = 'Быстро';
+                unlockedMessages[3] = true;
+            } else if (score >= 16 && score <= 99) {
+                message = 'Ну ладно, свободен';
+                unlockedMessages[4] = true;
+            } else if (score >= 100) {
+                message = 'Я гуль...';
+                unlockedMessages[5] = true;
+            }
+
+            messageDisplay.textContent = message;
+            finalMessage = message; // Store the message to display in Speed Ends menu
             alert(`Game over! Your final score is ${score}. Misses: ${misses}`);
             startButton.disabled = false;
+            autoButton.disabled = false;
+            endButton.disabled = true;
+            updateMessageStatuses(); // Update Speed Ends menu
+        }
+
+        function startAutoGame() {
+            if (autoGameInterval) {
+                clearInterval(autoGameInterval); 
+                autoButton.textContent = 'Автоматическая игра'; 
+            } else {
+                autoGameInterval = setInterval(() => {
+                    const targets = document.querySelectorAll('.target');
+                    if (targets.length > 0) {
+                        const randomTarget = targets[Math.floor(Math.random() * targets.length)];
+                        randomTarget.click();
+                    }
+                    score++;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                }, targetSpeed / 2); // Adjust the speed here for faster or slower automatic clicking
+
+                autoButton.textContent = 'Остановить Авто Игру'; 
+            }
+        }
+
+        function toggleSpeedEndsMenu() {
+            if (speedEndsMenu.style.display === 'block') {
+                speedEndsMenu.style.display = 'none';
+            } else {
+                speedEndsMenu.style.display = 'block';
+                updateMessageStatuses();
+            }
+        }
+
+        function updateMessageStatuses() {
+            for (let i = 0; i < unlockedMessages.length; i++) {
+                const messageDiv = document.getElementById(`message${i + 1}`);
+                messageDiv.textContent = `${messageDiv.textContent.split(':')[0]}: ${unlockedMessages[i] ? 'Unlocked' : 'Locked'}`;
+            }
+
+            // Display the final message in the Speed Ends menu
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = `Final message: ${finalMessage}`;
+            speedEndsMenu.appendChild(messageDiv);
         }
 
         startButton.addEventListener('click', startGame);
+        autoButton.addEventListener('click', startAutoGame);
+        endButton.addEventListener('click', endGame);
+        speedEndsButton.addEventListener('click', toggleSpeedEndsMenu); // Open/close Speed Ends menu
     </script>
 </body>
 </html>
