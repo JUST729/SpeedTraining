@@ -14,4 +14,4 @@ Everyone have good day
 BYEEEE :3
 
 UPDATE LOGS:
-UPDATE LOG: 08.12.2024 - 13:15 Remove button Final Message in Speed Ends menu (Nvm it doesnt remove)
+UPDATE LOG: 08.12.2024 - 13:15 Remove button Final Message in Speed Ends menu ( If i remove it game doesnt work =[ )
