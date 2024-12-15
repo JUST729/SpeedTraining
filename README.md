@@ -14,5 +14,10 @@ Everyone have good day
 BYEEEE :3
 
 UPDATE LOGS:
+
 UPDATE LOG: 08.12.2024 - 13:23 Add "Speed Ends" menu it show all endings what you can get also i remove "Level 1-4" now u can make speed how your soul want and i add "Auto Game" ( can be some bugs ) when u on this mode all circles pops by itself D:
 and thats all what i do 
+
+JUST SOMETHING:
+
+I wanna translate "Speed Ends" menu to english BUT ITS NOT FUCKING WORK
