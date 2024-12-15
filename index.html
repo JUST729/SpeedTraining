@@ -1,4 +1,4 @@
-=<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -111,15 +111,15 @@
         <button id="start-button">Start Game</button>
         <button id="auto-button">Auto Game</button>
         <button id="end-button">End Game</button>
-        <button id="speed-ends-button">Speed Ends</button> <!-- New Speed Ends Button -->
-        <div id="speed-ends-menu"> <!-- Speed Ends Menu -->
+        <button id="speed-ends-button">Speed Ends</button>
+        <div id="speed-ends-menu">
             <h3>Unlocked Messages</h3>
-            <div id="message1" class="message-status">1. Ты очень медленый попробуй быстрее: Locked</div>
-            <div id="message2" class="message-status">2. Уже лучше чем ничего: Locked</div>
-            <div id="message3" class="message-status">3. А ты не такой медленый: Locked</div>
-            <div id="message4" class="message-status">4. Быстро: Locked</div>
-            <div id="message5" class="message-status">5. Ну ладно, свободен: Locked</div>
-            <div id="message6" class="message-status">6. Я гуль...: Locked</div>
+            <div id="message1" class="message-status">1. You are very slow, try to be faster: Locked</div>
+            <div id="message2" class="message-status">2. Better than nothing: Locked</div>
+            <div id="message3" class="message-status">3. You’re not that slow: Locked</div>
+            <div id="message4" class="message-status">4. Fast: Locked</div>
+            <div id="message5" class="message-status">5. Alright, you’re free to go: Locked</div>
+            <div id="message6" class="message-status">6. I am a ghoul...: Locked</div>
         </div>
         <p id="message"></p>
     </div>
@@ -128,7 +128,7 @@
         const startButton = document.getElementById('start-button');
         const autoButton = document.getElementById('auto-button');
         const endButton = document.getElementById('end-button');
-        const speedEndsButton = document.getElementById('speed-ends-button'); // Speed Ends button element
+        const speedEndsButton = document.getElementById('speed-ends-button');
         const scoreDisplay = document.getElementById('score-display');
         const timeDisplay = document.getElementById('time-display');
         const missesDisplay = document.getElementById('misses-display');
@@ -143,8 +143,8 @@
         let timeLeft = 30;
         let autoGameInterval;
         let targetSpeed = parseInt(customSpeedInput.value);
-        let unlockedMessages = [false, false, false, false, false, false]; // Tracking message unlocks
-        let finalMessage = ''; // Variable to store the final message for Speed Ends menu
+        let unlockedMessages = [false, false, false, false, false, false];
+        let finalMessage = '';
 
         function setTargetSpeed() {
             targetSpeed = parseInt(customSpeedInput.value);
@@ -163,7 +163,7 @@
             scoreDisplay.textContent = `Score: ${score}`;
             missesDisplay.textContent = `Misses: ${misses}`;
             timeDisplay.textContent = `Time left: ${timeLeft}s`;
-            messageDisplay.textContent = ''; // Clear any previous message
+            messageDisplay.textContent = '';
             startButton.disabled = true;
             autoButton.disabled = true;
             endButton.disabled = false;
@@ -180,14 +180,14 @@
                 }
             }, 1000);
 
-            setTimeout(endGame, 30000); // 30 seconds game duration
+            setTimeout(endGame, 30000);
         }
 
         function createTarget() {
             const target = document.createElement('div');
             target.classList.add('target');
             
-            const size = 50; // You can customize this as well
+            const size = 50;
             target.style.width = `${size}px`;
             target.style.height = `${size}px`;
 
@@ -224,38 +224,38 @@
             
             let message = '';
             if (score === 0) {
-                message = 'Ты очень медленый попробуй быстрее';
+                message = 'You are very slow, try to be faster';
                 unlockedMessages[0] = true;
             } else if (score >= 1 && score <= 5) {
-                message = 'Уже лучше чем ничего';
+                message = 'Better than nothing';
                 unlockedMessages[1] = true;
             } else if (score >= 6 && score <= 10) {
-                message = 'А ты не такой медленый';
+                message = 'You’re not that slow';
                 unlockedMessages[2] = true;
             } else if (score >= 11 && score <= 15) {
-                message = 'Быстро';
+                message = 'Fast';
                 unlockedMessages[3] = true;
             } else if (score >= 16 && score <= 99) {
-                message = 'Ну ладно, свободен';
+                message = 'Alright, you’re free to go';
                 unlockedMessages[4] = true;
             } else if (score >= 100) {
-                message = 'Я гуль...';
+                message = 'I am a ghoul...';
                 unlockedMessages[5] = true;
             }
 
             messageDisplay.textContent = message;
-            finalMessage = message; // Store the message to display in Speed Ends menu
+            finalMessage = message;
             alert(`Game over! Your final score is ${score}. Misses: ${misses}`);
             startButton.disabled = false;
             autoButton.disabled = false;
             endButton.disabled = true;
-            updateMessageStatuses(); // Update Speed Ends menu
+            updateMessageStatuses();
         }
 
         function startAutoGame() {
             if (autoGameInterval) {
                 clearInterval(autoGameInterval); 
-                autoButton.textContent = 'Автоматическая игра'; 
+                autoButton.textContent = 'Auto Game'; 
             } else {
                 autoGameInterval = setInterval(() => {
                     const targets = document.querySelectorAll('.target');
@@ -265,9 +265,9 @@
                     }
                     score++;
                     scoreDisplay.textContent = `Score: ${score}`;
-                }, targetSpeed / 2); // Adjust the speed here for faster or slower automatic clicking
+                }, targetSpeed / 2);
 
-                autoButton.textContent = 'Остановить Авто Игру'; 
+                autoButton.textContent = 'Stop Auto Game'; 
             }
         }
 
@@ -286,7 +286,6 @@
                 messageDiv.textContent = `${messageDiv.textContent.split(':')[0]}: ${unlockedMessages[i] ? 'Unlocked' : 'Locked'}`;
             }
 
-            // Display the final message in the Speed Ends menu
             const messageDiv = document.createElement('div');
             messageDiv.textContent = `Final message: ${finalMessage}`;
             speedEndsMenu.appendChild(messageDiv);
@@ -295,7 +294,7 @@
         startButton.addEventListener('click', startGame);
         autoButton.addEventListener('click', startAutoGame);
         endButton.addEventListener('click', endGame);
-        speedEndsButton.addEventListener('click', toggleSpeedEndsMenu); // Open/close Speed Ends menu
+        speedEndsButton.addEventListener('click', toggleSpeedEndsMenu);
     </script>
 </body>
 </html>
